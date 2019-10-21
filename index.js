@@ -36,7 +36,7 @@ const commands = {
 		sendMessage('If you send me your current location, I\'ll see if I can find any data on air pollution in your area. You can also send me the name of a place or an address that you are interested in and I\'ll see if I can find any data for you. Data comes from https://openaq.org/, a great platform for open air quality data. Recommended levels taken from WHO guideline http://www.who.int/. \n\n Please also try these commands /help /owner')
 	},
 	owner(params) {
-		sendMessage('Built with lots of ♥  by Gopa Vasanth, Naga Sai, Karthik, Vamsi Krishna, Marri Venkat in the mentorship of Santhi Miss ❣️')
+		sendMessage('Built with lots of ♥  by Gopa Vasanth, Naga Sai, Karthik, Vamsi Krishna, Marri Venkat in the mentorship of Santhy Miss ❣️')
 	}
 }
 
@@ -55,7 +55,7 @@ function sendMessage(msg, options) {
 	options = {
 		parse_mode: 'Markdown',
 		reply_markup: { remove_keyboard: true },
-		...options,
+		//...options,
 	}
 	bot.sendMessage(message.chat.id, msg, options)
 }
@@ -65,7 +65,7 @@ function getMeasurements(location, radius = 25000) {
 		return res.body.results.filter((location) => {
 			return location.measurements && location.measurements.find((mes) => new Date(mes.lastUpdated) > moment().subtract(1, 'days'))
 		})
-	})
+	}).catch((err) => {console.log(err)})
 }
 
 function sendMeasurements(results) {
@@ -83,15 +83,14 @@ function sendMeasurements(results) {
 	}, {})
 	let text = ``
 	for(let param in measurements) {
-		text += `*${param}* ${Math.round(measurements[param].value * 100) / 100} ${measurements[param].unit} `
-		console.log(limits[param] + " " + limits[param].unit + " " + measurements[param].unit)				
-		console.log(limits[param] && limits[param].unit === measurements[param].unit)		
+		text += `
+*${param}* ${Math.round(measurements[param].value * 100) / 100} ${measurements[param].unit} `
 		if(limits[param] && limits[param].unit === measurements[param].unit) {
-			text += measurements[param].value > limits[param].high ? '😫 	' : measurements[param].value > limits[param].low ? '😐 ' : '🙂 '
+			text += measurements[param].value > limits[param].high ? '😫 ' : measurements[param].value > limits[param].low ? '😐 ' : '🙂 '
 		}
 		text += `_(${new Date(measurements[param].lastUpdated).toLocaleString()} in ${measurements[param].distance} km)_`
 	}
-	console.log(text)
+	sendMessage(text)
 }
 
 function sendAnswer(location) {
@@ -117,7 +116,7 @@ bot.on('text', function onMessage(msg) {
 			if(res.body.results.length < 1) return sendMessage(`I didn't find that address. Could you rephrase?`)
 			let location = res.body.results.pop()
 			sendAnswer({latitude: location.geometry.location.lat, longitude: location.geometry.location.lng})
-		})
+		}).catch((err) => {console.log(err)})
 	}
 });
 

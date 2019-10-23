@@ -16,9 +16,10 @@ const url = 't.me/vayumalinyabot'
 
 const bot = new TelegramBot(TOKEN, {polling: true})
 
-console.log("Hook Established !!")
+console.log("Pooling Started !!")
 
 const limits = {
+  o2: {low: 10, high: 25, unit: 'µg/m³'},
 	pm25: {low: 10, high: 25, unit: 'µg/m³'},
 	pm10: {low: 20, high: 50, unit: 'µg/m³'},
 	o3: {low: 100, high: 300, unit: 'µg/m³'},
@@ -68,7 +69,7 @@ function getMeasurements(location, radius = 25000) {
 	}).catch((err) => {console.log(err)})
 }
 
-function sendMeasurements(results) {
+function sendMeasurements(results, msg) {
 	if(results.length < 1) return sendMessage(`Sorry, I didn't find any data for your area...`)
 	let measurements = results.sort((l1, l2) => l1.distance - l2.distance).reduce((result, location) => {
 		location.measurements.filter((param) => new Date(param.lastUpdated) > moment().subtract(3, 'days')).map((param) => {
@@ -81,7 +82,7 @@ function sendMeasurements(results) {
 		})
 		return result
 	}, {})
-	let text = ``
+  let text = (`This is the current stats of your area !\n` )
 	for(let param in measurements) {
 		text += `
 *${param}* ${Math.round(measurements[param].value * 100) / 100} ${measurements[param].unit} `
@@ -90,6 +91,7 @@ function sendMeasurements(results) {
 		}
 		text += `_(${new Date(measurements[param].lastUpdated).toLocaleString()} in ${measurements[param].distance} km)_`
 	}
+  text += "\n\n Hope you will take all the required measures to control this pollution 😃" 
 	sendMessage(text)
 }
 

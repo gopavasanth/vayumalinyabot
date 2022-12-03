@@ -23,7 +23,7 @@
   "homepage": "https://github.com/gopavasanth/vayumalinyabot#readme",
   "dependencies": {
     "dotenv": "^4.0.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "node-telegram-bot-api": "^0.29.0",
     "superagent": "^3.8.3"
   },
